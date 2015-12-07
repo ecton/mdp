@@ -9,23 +9,6 @@ import (
 	"github.com/russross/blackfriday"
 )
 
-// Node contains all the information of a single organizational node
-type Node struct {
-	Name      string
-	Path      string
-	Title     string
-	Config    NodeConfig
-	Markdown  string
-	Children  map[string]*Node
-	DependsOn []*Node
-}
-
-// NodeConfig contains information that is represented in the toml header of a given node
-type NodeConfig struct {
-	Title     string
-	DependsOn []string
-}
-
 // parseFile turns a toml-prefixed markdown file into a Node structure
 func parseFile(filePath string, name string) (*Node, error) {
 	node := Node{

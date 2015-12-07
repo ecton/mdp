@@ -1,16 +1,21 @@
 <!DOCTYPE>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
         <title>{{.Title}}</title>
 
-        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
         <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
         <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
         <script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
         <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.1.2/cytoscape-dagre.js"></script>
             <style>
     			#cy {
-    				width: 100%;
+    				width: 50%;
     				height: 400px;
     				z-index: 999;
     			}
@@ -20,7 +25,7 @@
                     var cy = window.cy = cytoscape({
                         container: document.getElementById('cy'),
                         boxSelectionEnabled: false,
-                        autounselectify: true,
+                        autounselectify: false,
                         layout: {
                             name: 'dagre'
                         },
@@ -46,7 +51,8 @@
                                     {
                                         data: {
                                             id: '{{ $node.Name }}',
-                                            title: '{{ $node.Title }}'
+                                            title: '{{ $node.Title }}',
+                                            href: '{{ $node.Name }}.html'
                                         }
                                     },
                                 {{ end }}
@@ -65,11 +71,39 @@
                             ]
                         }
                     });
+                    cy.on('tap', 'node', function() {
+                        $('#iframe').attr('src', this.data('href'));
+                    })
                 });
             </script>
     </head>
     <body>
-        {{.Markdown}}
-        <div id="cy"></div>
+        <div class="container">
+            <div class="row">
+                <div class="panel panel-default">
+                    {{.Markdown}}
+                    {{ if .DependsOn }}
+                        <p>Depends On:
+                            {{ range $dependsIndex, $relatedNode := .DependsOn }}
+                                <a href="{{ $relatedNode.Name }}.html">{{ $relatedNode.Title }}</a>
+                            {{ end }}
+                    {{ end }}
+                    {{ if .DependedOnBy }}
+                        <p>Depended on by:
+                            {{ range $dependsIndex, $relatedNode := .DependedOnBy }}
+                                <a href="{{ $relatedNode.Name }}.html">{{ $relatedNode.Title }}</a>
+                            {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="cy"></div>
+                </div>
+                <div class="col-md-6">
+                    <iframe id="iframe" src="about:blank" width="100%" height="60%">
+                </div>
+            </div>
+        </div>
     </body>
 </html>

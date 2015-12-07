@@ -42,7 +42,7 @@ func main() {
 				log.Fatalf("Unknown error inspecting output directory: %v", err)
 			}
 		}
-		err = RenderNode(outDir, node)
+		err = RenderTopNode(outDir, node)
 		if err != nil {
 			log.Fatalf("Error rendering output: %v", err)
 		}
